@@ -77,13 +77,24 @@ export default function Header() {
                             </Link>
                         </nav>
 
-                        {/* Mobile Menu Button */}
-                        <button
-                            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                            className="md:hidden p-2 text-navy z-50 bg-white/50 backdrop-blur-md rounded-full shadow-sm border border-gray-100"
-                        >
-                            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-                        </button>
+                        {/* Actions */}
+                        <div className="flex items-center gap-2 md:gap-4 z-50">
+                            <Link href="/products" className="p-2.5 text-navy hover:text-gold transition-colors bg-white/50 md:bg-transparent backdrop-blur-md md:backdrop-blur-none rounded-full shadow-sm md:shadow-none border border-gray-100 md:border-transparent">
+                                <Search size={22} />
+                            </Link>
+                            <Link href="/checkout" className="p-2.5 text-navy hover:text-gold transition-colors bg-white/50 md:bg-transparent backdrop-blur-md md:backdrop-blur-none rounded-full shadow-sm md:shadow-none border border-gray-100 md:border-transparent relative">
+                                <ShoppingBag size={22} />
+                                <span className="absolute -top-1 -right-1 w-4 h-4 bg-gold text-white text-[10px] flex items-center justify-center rounded-full font-bold">1</span>
+                            </Link>
+
+                            {/* Mobile Menu Button */}
+                            <button
+                                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                                className="md:hidden p-2.5 text-navy bg-white/50 backdrop-blur-md rounded-full shadow-sm border border-gray-100 transition-all active:scale-95"
+                            >
+                                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </header>

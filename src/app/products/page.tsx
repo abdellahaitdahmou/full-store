@@ -119,44 +119,48 @@ export default async function ProductsPage({
                             </div>
                         )}
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8">
                             {products?.map((product) => (
-                                <Link href={`/products/${product.id}`} key={product.id} className="group">
-                                    <div className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gold/10 hover:border-gold/30 flex flex-col h-full">
+                                <Link href={`/products/${product.id}`} key={product.id} className="group flex flex-col h-full">
+                                    <div className="bg-white rounded-2xl md:rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-gold/10 hover:border-gold/30 flex flex-col h-full ring-1 ring-black/5">
                                         <div className="relative aspect-square overflow-hidden bg-gray-100 flex-shrink-0">
                                             {product.images?.[0] ? (
                                                 <img
                                                     src={product.images[0]}
                                                     alt={product.title}
-                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                                                 />
                                             ) : (
                                                 <div className="w-full h-full flex items-center justify-center text-gray-400">
                                                     لا توجد صورة
                                                 </div>
                                             )}
-                                            <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm text-xs font-bold px-3 py-1 rounded-full shadow-sm text-navy">
+                                            <div className="absolute top-2 right-2 md:top-4 md:right-4 bg-navy/80 backdrop-blur-md text-[8px] md:text-xs font-bold px-2 py-0.5 md:px-3 md:py-1 rounded-full shadow-sm text-gold border border-gold/20">
                                                 {product.category}
                                             </div>
                                         </div>
 
-                                        <div className="p-6 flex flex-col flex-1">
-                                            <h3 className="font-serif font-bold text-lg mb-2 text-navy group-hover:text-gold transition-colors line-clamp-2">
+                                        <div className="p-3 md:p-6 flex flex-col flex-1">
+                                            <h3 className="font-serif font-bold text-sm md:text-xl mb-1 md:mb-3 text-navy group-hover:text-gold transition-colors line-clamp-2 leading-tight">
                                                 {product.title}
                                             </h3>
-                                            <div className="flex items-center gap-1 mb-4 text-gold">
-                                                <Star size={14} fill="currentColor" />
-                                                <Star size={14} fill="currentColor" />
-                                                <Star size={14} fill="currentColor" />
-                                                <Star size={14} fill="currentColor" />
-                                                <Star size={14} fill="currentColor" />
+                                            <div className="flex items-center gap-0.5 md:gap-1 mb-2 md:mb-5 text-gold shrink-0">
+                                                <Star size={10} fill="currentColor" className="md:w-4 md:h-4" />
+                                                <Star size={10} fill="currentColor" className="md:w-4 md:h-4" />
+                                                <Star size={10} fill="currentColor" className="md:w-4 md:h-4" />
+                                                <Star size={10} fill="currentColor" className="md:w-4 md:h-4" />
+                                                <Star size={10} fill="currentColor" className="md:w-4 md:h-4" />
+                                                <span className="text-[9px] md:text-xs text-gray-400 mr-1">(أكثر من 50)</span>
                                             </div>
-                                            <div className="mt-auto flex items-center justify-between pt-4 border-t border-gray-100">
-                                                <span className="font-black text-2xl text-navy">
-                                                    {product.price.toFixed(2)} درهم
-                                                </span>
-                                                <div className="w-10 h-10 rounded-full bg-white border border-gold/30 text-navy flex items-center justify-center group-hover:bg-gold group-hover:text-white transition-colors rotate-180">
-                                                    <ArrowRight size={18} />
+
+                                            <div className="flex flex-row items-center justify-between mt-auto pt-2 border-t border-gray-50">
+                                                <div className="flex flex-col">
+                                                    <span className="font-black text-sm md:text-2xl text-navy">
+                                                        {product.price} <span className="text-[10px] md:text-sm font-bold">د.م</span>
+                                                    </span>
+                                                </div>
+                                                <div className="w-7 h-7 md:w-11 md:h-11 rounded-full bg-gold/5 flex items-center justify-center text-gold group-hover:bg-gold group-hover:text-white transition-all duration-300 border border-gold/10">
+                                                    <ArrowRight size={14} className="rotate-180 md:w-5 md:h-5" />
                                                 </div>
                                             </div>
                                         </div>

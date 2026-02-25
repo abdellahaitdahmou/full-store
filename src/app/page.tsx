@@ -40,30 +40,30 @@ export default async function Home() {
 
         <div className="container mx-auto px-4 md:px-8 max-w-7xl relative z-10">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-xs font-medium mb-6 border border-gold/20">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-[10px] md:text-xs font-medium mb-6 border border-gold/20 animate-fade-in">
               <span className="w-2 h-2 rounded-full bg-gold animate-pulse"></span>
               جديد وحصري
             </div>
-            <h1 className="text-5xl md:text-7xl font-serif font-bold tracking-tight mb-8 leading-tight">
+            <h1 className="text-4xl md:text-7xl font-serif font-bold tracking-tight mb-6 md:mb-8 leading-tight animate-slide-up [animation-delay:200ms]">
               أفضل المنتجات، <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-gold/80 to-white animate-shimmer">
                 حتى باب بيتك.
               </span>
             </h1>
-            <p className="text-xl text-gray-400 mb-10 max-w-xl leading-relaxed">
-              اختر ما تريد وادفع فقط عند الاستلام. الدفع عند التوصيل مضمون ومجرب.
+            <p className="text-base md:text-xl text-gray-300 md:text-gray-400 mb-8 md:10 max-w-xl leading-relaxed animate-slide-up [animation-delay:400ms]">
+              اختر ما تريد وادفع فقط عند الاستلام. الدفع عند التوصيل مضمون ومجرب في جميع أنحاء المغرب.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 animate-slide-up [animation-delay:600ms]">
               <Link
                 href="/products"
-                className="bg-gold text-white px-8 py-4 rounded-full font-semibold text-lg hover:opacity-90 hover:scale-105 transition-all shadow-[0_0_30px_rgba(212,175,55,0.3)] flex items-center justify-center gap-2 group"
+                className="bg-gold text-white px-8 py-4 rounded-full font-semibold text-lg hover:opacity-90 hover:scale-105 transition-all shadow-[0_10px_30px_rgba(212,175,55,0.4)] flex items-center justify-center gap-2 group"
               >
                 تصفح المنتجات
                 <ArrowRight className="group-hover:-translate-x-1 transition-transform rotate-180" />
               </Link>
               <Link
                 href="#features"
-                className="bg-white/10 text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white/20 transition-all border border-white/10 text-center"
+                className="bg-white/5 backdrop-blur-sm text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white/10 transition-all border border-white/20 text-center"
               >
                 اعرف المزيد
               </Link>
@@ -126,44 +126,46 @@ export default async function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
             {featuredProducts?.map((product) => (
               <Link href={`/products/${product.id}`} key={product.id} className="group">
-                <div className="bg-cream rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gold/10">
+                <div className="bg-white rounded-2xl md:rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-gold/10 flex flex-col h-full">
                   <div className="relative aspect-square overflow-hidden bg-gray-100">
                     {product.images?.[0] ? (
                       <img
                         src={product.images[0]}
                         alt={product.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-gray-400">
                         No Image
                       </div>
                     )}
-                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-xs font-bold px-3 py-1 rounded-full text-navy shadow-sm">
+                    <div className="absolute top-2 right-2 md:top-4 md:right-4 bg-navy/80 backdrop-blur-md text-[8px] md:text-xs font-bold px-2 py-0.5 md:px-3 md:py-1 rounded-full text-gold shadow-sm border border-gold/20">
                       {product.category}
                     </div>
                   </div>
-                  <div className="p-6">
-                    <h3 className="font-bold font-serif text-lg mb-2 text-navy group-hover:text-gold transition-colors line-clamp-1">
+                  <div className="p-3 md:p-6 flex flex-col flex-1">
+                    <h3 className="font-bold font-serif text-sm md:text-lg mb-1 md:mb-2 text-navy group-hover:text-gold transition-colors line-clamp-2 leading-tight">
                       {product.title}
                     </h3>
-                    <div className="flex items-center gap-1 mb-4 text-gold">
-                      <Star size={16} fill="currentColor" />
-                      <Star size={16} fill="currentColor" />
-                      <Star size={16} fill="currentColor" />
-                      <Star size={16} fill="currentColor" />
-                      <Star size={16} fill="currentColor" />
-                      <span className="text-xs text-gray-500 mr-1">(أكثر من 50)</span>
+                    <div className="flex items-center gap-0.5 md:gap-1 mb-2 md:mb-4 text-gold shrink-0">
+                      <Star size={10} fill="currentColor" className="md:w-4 md:h-4" />
+                      <Star size={10} fill="currentColor" className="md:w-4 md:h-4" />
+                      <Star size={10} fill="currentColor" className="md:w-4 md:h-4" />
+                      <Star size={10} fill="currentColor" className="md:w-4 md:h-4" />
+                      <Star size={10} fill="currentColor" className="md:w-4 md:h-4" />
+                      <span className="text-[10px] md:text-xs text-gray-500 mr-1">(50+)</span>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="font-black text-2xl text-navy">
-                        {product.price.toFixed(2)} درهم
-                      </span>
-                      <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-navy group-hover:bg-gold group-hover:text-white transition-colors border border-gold/20">
-                        <ArrowRight size={18} className="rotate-180" />
+                    <div className="flex items-center justify-between mt-auto">
+                      <div className="flex flex-col">
+                        <span className="font-black text-sm md:text-2xl text-navy">
+                          {product.price} <span className="text-[10px] md:text-sm font-bold">د.م</span>
+                        </span>
+                      </div>
+                      <div className="w-7 h-7 md:w-10 md:h-10 rounded-full bg-gold/10 flex items-center justify-center text-gold group-hover:bg-gold group-hover:text-white transition-all duration-300 border border-gold/20">
+                        <ArrowRight size={14} className="rotate-180 md:w-[18px] md:h-[18px]" />
                       </div>
                     </div>
                   </div>
