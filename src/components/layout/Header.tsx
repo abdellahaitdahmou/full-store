@@ -37,62 +37,58 @@ export default function Header() {
     return (
         <>
             <header
-                className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'glass py-3' : 'bg-transparent py-5'
+                className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white/95 backdrop-blur-md shadow-sm py-3' : 'bg-transparent py-6'
                     }`}
             >
                 <div className="container mx-auto px-4 md:px-8 max-w-7xl">
-                    <div className="flex items-center justify-between gap-4">
+                    <div className="grid grid-cols-2 md:grid-cols-3 items-center gap-4">
 
-                        {/* Logo */}
-                        <Link href="/" className="flex items-center gap-2 group z-50">
-                            <div className="w-10 h-10 bg-navy text-white rounded-xl flex items-center justify-center font-bold text-xl group-hover:scale-105 transition-transform duration-300 shadow-lg">
-                                <span className="text-gold">لـ</span>جـ
-                            </div>
-                            <span className={`font-serif font-bold text-2xl tracking-tight hidden sm:block ${isScrolled ? 'text-navy' : 'text-navy'}`}>
-                                لحظة جولد
-                            </span>
-                        </Link>
-
-                        {/* Desktop Search */}
-                        <div className="hidden md:flex flex-1 max-w-md mx-8 relative group">
-                            <form onSubmit={handleSearch} className="w-full relative">
-                                <input
-                                    type="text"
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    placeholder="ابحث عن منتج..."
-                                    className="w-full bg-light-gray hover:bg-white focus:bg-white text-navy px-5 py-3 rounded-full outline-none border border-transparent focus:border-gold/30 focus:ring-4 focus:ring-gold/10 transition-all shadow-sm group-hover:shadow-md pr-12"
-                                />
-                                <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5" />
-                            </form>
+                        {/* Logo - Left */}
+                        <div className="flex items-center justify-start">
+                            <Link href="/" className="flex items-center gap-2 group z-50">
+                                <div className="w-9 h-9 bg-[#FF6600] text-white rounded-lg flex items-center justify-center font-black text-xl shadow-lg ring-4 ring-[#FF6600]/10 shrink-0">
+                                    Q
+                                </div>
+                                <span className="font-sans font-black text-xl md:text-2xl tracking-tighter text-navy flex items-center">
+                                    QUICK <span className="text-[#FF6600] ml-1">DROP</span>
+                                </span>
+                            </Link>
                         </div>
 
-                        {/* Desktop Navigation */}
-                        <nav className="hidden md:flex items-center gap-8">
-                            <Link href="/" className="font-medium text-navy hover:text-gold transition-colors relative after:absolute after:bottom-0 after:right-0 after:h-[2px] after:w-0 hover:after:w-full after:bg-gold after:transition-all">
-                                الرئيسية
-                            </Link>
-                            <Link href="/products" className="font-medium text-navy hover:text-gold transition-colors relative after:absolute after:bottom-0 after:right-0 after:h-[2px] after:w-0 hover:after:w-full after:bg-gold after:transition-all">
-                                المنتجات
-                            </Link>
+                        {/* Desktop Navigation - Center */}
+                        <nav className="hidden md:flex items-center justify-center gap-10">
+                            {[
+                                { name: 'Home', path: '/' },
+                                { name: 'Shop', path: '/products' },
+                                { name: 'Categories', path: '/products' },
+                                { name: 'Track Order', path: '/checkout' }
+                            ].map((link) => (
+                                <Link
+                                    key={link.name}
+                                    href={link.path}
+                                    className={`font-bold text-sm uppercase tracking-widest transition-colors ${pathname === link.path ? 'text-[#FF6600]' : 'text-navy hover:text-[#FF6600]'}`}
+                                >
+                                    {link.name}
+                                </Link>
+                            ))}
                         </nav>
 
-                        {/* Actions */}
-                        <div className="flex items-center gap-2 md:gap-4 z-50">
-                            <Link href="/products" className="p-2.5 text-navy hover:text-gold transition-colors bg-white/50 md:bg-transparent backdrop-blur-md md:backdrop-blur-none rounded-full shadow-sm md:shadow-none border border-gray-100 md:border-transparent">
-                                <Search size={22} />
-                            </Link>
-                            <Link href="/checkout" className="p-2.5 text-navy hover:text-gold transition-colors bg-white/50 md:bg-transparent backdrop-blur-md md:backdrop-blur-none rounded-full shadow-sm md:shadow-none border border-gray-100 md:border-transparent relative">
-                                <ShoppingBag size={22} />
-                                <span className="absolute -top-1 -right-1 w-4 h-4 bg-gold text-white text-[10px] flex items-center justify-center rounded-full font-bold">1</span>
+                        {/* Actions - Right */}
+                        <div className="flex items-center justify-end gap-3 md:gap-6 z-50">
+                            <button className="p-2 text-navy hover:text-[#FF6600] transition-colors hidden sm:block">
+                                <Search size={22} strokeWidth={2.5} />
+                            </button>
+                            <Link href="/checkout" className="p-2 text-navy hover:text-[#FF6600] transition-colors relative">
+                                <ShoppingBag size={22} strokeWidth={2.5} />
+                                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#FF6600] text-white text-[9px] flex items-center justify-center rounded-full font-bold">0</span>
                             </Link>
 
                             {/* Mobile Menu Button */}
                             <button
                                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                                className="md:hidden p-2.5 text-navy bg-white/50 backdrop-blur-md rounded-full shadow-sm border border-gray-100 transition-all active:scale-95"
+                                className="md:hidden p-2 text-navy hover:text-[#FF6600] transition-all active:scale-95"
                             >
-                                {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                                {isMobileMenuOpen ? <X size={28} /> : <Menu size={28} />}
                             </button>
                         </div>
                     </div>
