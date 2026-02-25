@@ -9,7 +9,7 @@ export default async function ProductsPage({
 }: {
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-    const { search, category, sort } = await searchParams
+    const { search, category, sort } = await searchParams as { search?: string, category?: string, sort?: string }
     const supabase = await createClient()
 
     let query = supabase.from('products').select('*')
@@ -27,7 +27,6 @@ export default async function ProductsPage({
     } else if (sort === 'price_desc') {
         query = query.order('price', { ascending: false })
     } else {
-        // Default: Newest
         query = query.order('created_at', { ascending: false })
     }
 
@@ -41,88 +40,107 @@ export default async function ProductsPage({
         <div className="bg-cream min-h-screen py-12">
             <div className="container mx-auto px-4 md:px-8 max-w-7xl">
 
-                {/* Header & Search */}
-                <div className="mb-12">
-                    <h1 className="text-4xl font-serif font-bold tracking-tight mb-4 text-navy">منتجاتنا</h1>
-                    <p className="text-gray-500 text-lg max-w-2xl">
-                        اختر ما يناسبك من الكتالوج الخاص بنا، توصيل مجاني والدفع عند الاستلام!
-                    </p>
+                {/* Header Section */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+                    <div>
+                        <h1 className="text-4xl md:text-5xl font-serif font-bold tracking-tight mb-4 text-navy">كتالوج المنتجات</h1>
+                        <p className="text-gray-500 text-lg max-w-xl">
+                            اكتشف مجموعتنا المختارة بعناية. توصيل مجاني سريع لجميع المدن المغربية.
+                        </p>
+                    </div>
+                    <div className="flex items-center gap-2 text-navy/60 font-medium bg-white px-5 py-2.5 rounded-full border border-gold/10 shadow-sm self-start md:self-auto">
+                        <span className="text-gold font-bold">{products?.length || 0}</span>
+                        <span>منتج متوفر حالياً</span>
+                    </div>
                 </div>
 
-                <div className="flex flex-col md:flex-row gap-8">
-
-                    {/* Sidebar / Filters */}
-                    <div className="w-full md:w-64 flex-shrink-0 space-y-8">
-                        {/* Mobile Filter Toggle Button (Informational only for simplicity) */}
-                        <div className="md:hidden flex items-center gap-2 font-bold text-lg mb-4">
-                            <SlidersHorizontal size={20} />
-                            تصفية
+                {/* Modern Filter & Sort Bar */}
+                <div className="sticky top-20 z-40 bg-cream/80 backdrop-blur-xl py-4 mb-8 -mx-4 px-4 md:mx-0 md:px-0">
+                    <div className="flex flex-col gap-4">
+                        {/* Category Pills - Scrollable */}
+                        <div className="flex items-center gap-2 overflow-x-auto pb-2 hide-scrollbar">
+                            <Link
+                                href={`/products${sort ? `?sort=${sort}` : ''}`}
+                                className={`whitespace-nowrap px-6 py-2.5 rounded-full text-sm font-bold transition-all border ${!category ? 'bg-navy text-white border-navy ring-4 ring-navy/10' : 'bg-white text-navy border-gold/10 hover:border-gold shadow-sm'}`}
+                            >
+                                الكل
+                            </Link>
+                            {categories.map((cat) => (
+                                <Link
+                                    key={cat}
+                                    href={`/products?category=${encodeURIComponent(cat)}${sort ? `&sort=${sort}` : ''}`}
+                                    className={`whitespace-nowrap px-6 py-2.5 rounded-full text-sm font-bold transition-all border ${category === cat ? 'bg-navy text-white border-navy ring-4 ring-navy/10' : 'bg-white text-navy border-gold/10 hover:border-gold shadow-sm'}`}
+                                >
+                                    {cat}
+                                </Link>
+                            ))}
                         </div>
 
-                        <div className="bg-white p-6 rounded-3xl border border-gold/10 shadow-sm">
-                            <h3 className="font-serif font-bold text-xl mb-4 text-navy border-b border-light-gray pb-2">الأقسام</h3>
-                            <div className="space-y-3">
-                                <a
-                                    href={`/products${sort ? `?sort=${sort}` : ''}`}
-                                    className={`block py-1 transition-colors ${!category ? 'text-gold font-bold' : 'text-gray-500 hover:text-navy'}`}
-                                >
-                                    جميع المنتجات
-                                </a>
-                                {categories.map((cat) => (
-                                    <a
-                                        key={cat}
-                                        href={`/products?category=${encodeURIComponent(cat)}${sort ? `&sort=${sort}` : ''}`}
-                                        className={`block py-1 transition-colors ${category === cat ? 'text-gold font-bold' : 'text-gray-500 hover:text-navy'}`}
-                                    >
-                                        {cat}
-                                    </a>
-                                ))}
-                            </div>
-                        </div>
+                        {/* Search Feedback & Sorting Selection */}
+                        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                            {search && (
+                                <div className="flex items-center gap-3 bg-white px-4 py-2 rounded-full border border-gold/20 shadow-sm w-full sm:w-auto">
+                                    <Search size={16} className="text-gold" />
+                                    <span className="text-sm text-gray-600">
+                                        البحث عن: <span className="font-bold text-navy">"{search}"</span>
+                                    </span>
+                                    <Link href="/products" className="text-xs text-gold hover:underline font-bold mr-2 pr-2 border-r border-gold/20">
+                                        مسح
+                                    </Link>
+                                </div>
+                            )}
 
-                        <div className="bg-white p-6 rounded-3xl border border-gold/10 shadow-sm">
-                            <h3 className="font-serif font-bold text-xl mb-4 text-navy border-b border-light-gray pb-2">ترتيب حسب</h3>
-                            <div className="space-y-3">
-                                <a
-                                    href={`/products?${category ? `category=${category}&` : ''}sort=newest`}
-                                    className={`block py-1 transition-colors ${(!sort || sort === 'newest') ? 'text-gold font-bold' : 'text-gray-500 hover:text-navy'}`}
-                                >
-                                    الأحدث
-                                </a>
-                                <a
-                                    href={`/products?${category ? `category=${category}&` : ''}sort=price_asc`}
-                                    className={`block py-1 transition-colors ${sort === 'price_asc' ? 'text-gold font-bold' : 'text-gray-500 hover:text-navy'}`}
-                                >
-                                    السعر: من الأقل للأعلى
-                                </a>
-                                <a
-                                    href={`/products?${category ? `category=${category}&` : ''}sort=price_desc`}
-                                    className={`block py-1 transition-colors ${sort === 'price_desc' ? 'text-gold font-bold' : 'text-gray-500 hover:text-navy'}`}
-                                >
-                                    السعر: من الأعلى للأقل
-                                </a>
+                            <div className="flex items-center gap-4 w-full sm:w-auto ml-auto">
+                                <div className="flex items-center gap-2 text-sm font-bold text-navy whitespace-nowrap">
+                                    <SlidersHorizontal size={18} className="text-gold" />
+                                    <span>ترتيب:</span>
+                                </div>
+                                <div className="flex items-center gap-1 bg-white p-1 rounded-full border border-gold/10 shadow-sm w-full overflow-hidden">
+                                    {[
+                                        { id: 'newest', label: 'الأحدث' },
+                                        { id: 'price_asc', label: 'السعر الأدنى' },
+                                        { id: 'price_desc', label: 'السعر الأعلى' }
+                                    ].map((s) => (
+                                        <Link
+                                            key={s.id}
+                                            href={`/products?${category ? `category=${category}&` : ''}sort=${s.id}`}
+                                            className={`px-4 py-1.5 rounded-full text-[11px] md:text-sm font-bold transition-all whitespace-nowrap flex-1 text-center ${((!sort && s.id === 'newest') || sort === s.id) ? 'bg-gold text-white' : 'text-gray-500 hover:text-navy hover:bg-gold/5'}`}
+                                        >
+                                            {s.label}
+                                        </Link>
+                                    ))}
+                                </div>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    {/* Product Grid */}
-                    <div className="flex-1">
-
-                        {search && (
-                            <div className="mb-6 p-4 bg-white rounded-xl border border-gold/10 flex items-center justify-between">
-                                <span className="text-gray-600">
-                                    نتائج البحث عن: <span className="font-bold text-navy">"{search}"</span>
-                                </span>
-                                <a href="/products" className="text-sm text-gray-400 hover:text-navy underline">
-                                    مسح
-                                </a>
+                {/* Product Grid */}
+                <div className="w-full">
+                    {(!products || products.length === 0) ? (
+                        <div className="bg-white rounded-[40px] border border-gold/10 p-12 md:p-24 text-center shadow-xl relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-64 h-64 bg-gold/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl group-hover:bg-gold/10 transition-colors duration-1000"></div>
+                            <div className="relative z-10">
+                                <div className="w-24 h-24 bg-gold/5 rounded-full flex items-center justify-center mx-auto mb-8 border border-gold/10">
+                                    <Search className="w-12 h-12 text-gold animate-pulse" />
+                                </div>
+                                <h2 className="text-3xl font-serif font-bold mb-4 text-navy">عذراً، لم نجد نتائج!</h2>
+                                <p className="text-gray-500 mb-10 max-w-sm mx-auto text-lg leading-relaxed">
+                                    لم نتمكن من العثور على أي منتج يطابق معاييرك الحالية. جرب البحث باسم آخر أو استكشاف الأقسام الأخرى.
+                                </p>
+                                <Link
+                                    href="/products"
+                                    className="inline-flex bg-navy text-white px-10 py-4 rounded-full font-bold hover:bg-gold transition-all duration-300 shadow-lg shadow-navy/20 hover:shadow-gold/40 active:scale-95"
+                                >
+                                    العودة للمتجر بالكامل
+                                </Link>
                             </div>
-                        )}
-
-                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8">
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-8">
                             {products?.map((product) => (
                                 <Link href={`/products/${product.id}`} key={product.id} className="group flex flex-col h-full">
-                                    <div className="bg-white rounded-2xl md:rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-gold/10 hover:border-gold/30 flex flex-col h-full ring-1 ring-black/5">
+                                    <div className="bg-white rounded-2xl md:rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 border border-gold/10 hover:border-gold/30 flex flex-col h-full ring-1 ring-black/5">
                                         <div className="relative aspect-square overflow-hidden bg-gray-100 flex-shrink-0">
                                             {product.images?.[0] ? (
                                                 <img
@@ -168,25 +186,9 @@ export default async function ProductsPage({
                                 </Link>
                             ))}
                         </div>
-
-                        {(!products || products.length === 0) && (
-                            <div className="bg-white rounded-3xl border border-gold/20 p-16 text-center shadow-sm">
-                                <Search className="mx-auto w-16 h-16 text-gold/50 mb-6" />
-                                <h2 className="text-2xl font-serif font-bold mb-2 text-navy">لم نجد شيئاً!</h2>
-                                <p className="text-gray-500 mb-8 max-w-sm mx-auto">
-                                    لم نتمكن من العثور على أي منتج يطابق معاييرك. حاول البحث باسم آخر أو تغيير القسم.
-                                </p>
-                                <a
-                                    href="/products"
-                                    className="inline-block bg-gold text-white px-8 py-4 rounded-full font-semibold hover:opacity-90 transition-colors"
-                                >
-                                    عرض جميع المنتجات
-                                </a>
-                            </div>
-                        )}
-                    </div>
-
+                    )}
                 </div>
+
             </div>
         </div>
     )
