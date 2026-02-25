@@ -4,6 +4,7 @@ import { ShieldCheck, Truck, RefreshCcw, Package, Star } from 'lucide-react'
 import OrderForm from './OrderForm'
 import Link from 'next/link'
 import AddToCartButton from '@/components/products/AddToCartButton'
+import ProductGallery from '@/components/products/ProductGallery'
 
 export default async function ProductDetailPage({
     params,
@@ -36,37 +37,12 @@ export default async function ProductDetailPage({
             <div className="container mx-auto px-4 md:px-8 max-w-7xl">
                 <div className="bg-white rounded-[40px] border-2 border-gray-50 shadow-sm overflow-hidden flex flex-col lg:flex-row ring-1 ring-black/5">
 
-                    {/* Image Gallery */}
-                    <div className="lg:w-1/2 p-4 md:p-12 bg-gray-50 flex flex-col justify-center items-center relative gap-6">
-                        <div className="absolute top-6 left-6 z-10">
-                            <div className="bg-[#FF6600] text-white text-[10px] font-black px-4 py-2 rounded-xl shadow-lg uppercase tracking-wider">
-                                {product.category}
-                            </div>
-                        </div>
-
-                        {product.images?.[0] ? (
-                            <img
-                                src={product.images[0]}
-                                alt={product.title}
-                                className="w-full max-w-lg h-auto object-contain drop-shadow-2xl rounded-3xl"
-                            />
-                        ) : (
-                            <div className="w-full aspect-square bg-white rounded-3xl flex items-center justify-center text-gray-300 border-2 border-dashed border-gray-200">
-                                لا توجد صورة
-                            </div>
-                        )}
-
-                        {/* Thumbnails */}
-                        {product.images?.length > 1 && (
-                            <div className="flex gap-3 mt-4 overflow-x-auto w-full justify-center pb-2 hide-scrollbar">
-                                {product.images.map((img: string, i: number) => (
-                                    <div key={i} className={`w-16 h-16 rounded-2xl overflow-hidden border-2 transition-all cursor-pointer shadow-sm flex-shrink-0 ${i === 0 ? 'border-[#FF6600]' : 'border-white hover:border-gray-200'}`}>
-                                        <img src={img} alt={`Thumbnail ${i}`} className="w-full h-full object-cover" />
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </div>
+                    {/* Interactive Image Gallery */}
+                    <ProductGallery
+                        images={product.images || []}
+                        title={product.title}
+                        category={product.category}
+                    />
 
                     {/* Product Details & Form */}
                     <div className="lg:w-1/2 p-6 md:p-12 flex flex-col">

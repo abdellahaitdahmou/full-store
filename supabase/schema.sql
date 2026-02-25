@@ -36,6 +36,8 @@ create table if not exists orders (
   city text not null,
   product_id uuid references products(id) on delete cascade not null,
   status text not null default 'Pending' check (status in ('Pending', 'Confirmed', 'Delivered', 'Cancelled')),
+  items jsonb default '[]'::jsonb,
+  total_amount numeric default 0,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
