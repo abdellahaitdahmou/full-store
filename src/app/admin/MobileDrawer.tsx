@@ -1,7 +1,8 @@
 'use client'
 
-import { X, LogOut, Settings, BarChart3, User, ShieldCheck } from 'lucide-react'
+import { X, LogOut, Settings, BarChart3, User, ShieldCheck, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import Link from 'next/link'
 
 interface MobileDrawerProps {
     isOpen: boolean
@@ -60,6 +61,15 @@ export default function MobileDrawer({ isOpen, onClose, signOutAction }: MobileD
                 {/* Secondary Navigation */}
                 <nav className="flex-1 p-6 space-y-4">
                     <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">إعدادات إضافية</div>
+
+                    <Link
+                        href="/"
+                        target="_blank"
+                        className="flex items-center gap-3 w-full p-3 text-gold bg-gold/5 border border-gold/10 rounded-xl transition-all font-bold text-sm text-right mb-2 group"
+                    >
+                        <ExternalLink size={18} className="text-gold group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                        <span>عرض المتجر</span>
+                    </Link>
 
                     <button className="flex items-center gap-3 w-full p-2 text-navy hover:bg-gold/5 rounded-xl transition-colors font-medium text-sm text-right">
                         <BarChart3 size={18} className="text-gray-400" />

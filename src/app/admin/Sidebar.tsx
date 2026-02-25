@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Package, ShoppingCart, LogOut, Settings, BarChart3, Calculator } from 'lucide-react'
+import { LayoutDashboard, Package, ShoppingCart, LogOut, Settings, BarChart3, Calculator, ExternalLink } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export default function Sidebar({ signOutAction }: { signOutAction: () => Promise<void> }) {
@@ -13,6 +13,7 @@ export default function Sidebar({ signOutAction }: { signOutAction: () => Promis
         { href: '/admin/products', label: 'المنتجات', icon: Package },
         { href: '/admin/orders', label: 'الطلبات', icon: ShoppingCart },
         { href: '/admin/calculator', label: 'المحاكاة والأرباح', icon: Calculator },
+        { href: '/', label: 'عرض المتجر', icon: ExternalLink, external: true },
         { href: '#', label: 'التقارير', icon: BarChart3 }, // Placeholder
         { href: '#', label: 'الإعدادات', icon: Settings }, // Placeholder
     ]
@@ -41,6 +42,7 @@ export default function Sidebar({ signOutAction }: { signOutAction: () => Promis
                         <Link
                             key={item.label}
                             href={item.href}
+                            target={item.external ? "_blank" : undefined}
                             className={cn(
                                 "flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-300 font-medium group relative overflow-hidden",
                                 isActive
