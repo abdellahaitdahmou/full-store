@@ -63,30 +63,61 @@ export async function POST(req: Request) {
                 }
             }
         })
-        const possibleImages = Array.from(imageUrls).slice(0, 30).join('\n')
+        const possibleImages = Array.from(imageUrls).slice(0, 30)
 
-        // 3. Use Gemini to extract and translate details
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
+        // 3. Prepare Image Parts for Gemini Vision
+        // We fetch the top 10 potential images to find the best product shots
+        const imageCandidates = possibleImages.slice(0, 10)
+        const imageParts = await Promise.all(
+            imageCandidates.map(async (url) => {
+                try {
+                    const imgRes = await fetch(url)
+                    if (imgRes.ok) {
+                        const contentType = imgRes.headers.get('content-type') || 'image/jpeg'
+                        // Only process valid images
+                        if (contentType.startsWith('image/')) {
+                            const buffer = await imgRes.arrayBuffer()
+                            const base64 = Buffer.from(buffer).toString('base64')
+                            return {
+                                inlineData: {
+                                    data: base64,
+                                    mimeType: contentType
+                                }
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.error(`Failed to fetch image for vision: ${url}`)
+                }
+                return null
+            })
+        )
+        const validImageParts = imageParts.filter(p => p !== null) as any[]
+
+        // 4. Use Gemini 2.0 Flash to extract, translate, and VISION-FILTER details
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
         const prompt = `
-        You are an expert e-commerce product data extractor. 
-        Analyze the following text content, structured JSON-LD (if any), and list of possible image URLs scraped from an e-commerce product page (like AliExpress, Alibaba, or Temu).
+        You are an expert e-commerce product data extractor with ADVANCED VISION capabilities.
         
-        Extract the following information and translate the text to well-written, professional Arabic suitable for a high-end Moroccan e-commerce store:
-        1. "title": A concise, attractive product title in Arabic.
-        2. "description": A detailed, persuasive product description in Arabic with bullet points for features.
-        3. "price": Extract the numeric price. Convert it appropriately to Moroccan Dirhams (MAD) if it's in USD or EUR (Assume 1 USD = 10 MAD, 1 EUR = 11 MAD approx). Just return the number without currency symbols.
-        4. "category": Categorize the product into one short Arabic category name.
-        5. "images": Select the top 1 to 6 highest quality, MAIN PRODUCT GALLERY/SHOWCASE images. 
-           CRITICAL RULES FOR IMAGES:
-           - IGNORE logos, shipping icons, truck icons, checkmarks, trust badges, payment method icons, or empty placeholders.
-           - ONLY select images that show the ACTUAL product being sold.
-           - Prefer larger images that look like professional photography.
+        Analyze the provided text content, structured JSON-LD AND the attached images.
+        
+        TASKS:
+        1. "title": Create a concise, attractive product title in Arabic.
+        2. "description": Create a detailed, persuasive product description in Arabic with bullet points for features.
+        3. "price": Extract the price. Convert to Moroccan Dirhams (MAD). (Assume 1 USD = 10 MAD). Return ONLY the number.
+        4. "category": Categorize into one short Arabic category name.
+        5. "images": LOOK AT THE ATCHED IMAGES CAREFULLY. Compare them with the product description from the text.
+           - ONLY select the URLs of images that CLEARLY show the actual PRODUCT being described.
+           - STERNLY IGNORE: Logos, delivery trucks, "Free Shipping" icons, checkmarks, trust badges, payment icons, or advertisements.
+           - Select the images from this list based on their content:
+             ${imageCandidates.join('\n')}
+           - Return the selected URLs in the 'images' array.
 
-        Return EXACTLY a JSON object with NO markdown formatting.
+        Return EXACTLY a JSON object with NO markdown:
         {
             "title": "Title in Arabic",
             "description": "Description in Arabic",
-            "price": 199.99,
+            "price": 123.45,
             "category": "Category",
             "images": ["url1", "url2"]
         }
@@ -97,17 +128,13 @@ export async function POST(req: Request) {
         
         ---
         TEXT CONTENT:
-        ${textContent}
-
-        ---
-        POSSIBLE IMAGES:
-        ${possibleImages}
+        ${textContent.substring(0, 10000)}
         `
 
-        const result = await model.generateContent(prompt)
+        const result = await model.generateContent([prompt, ...validImageParts])
         const responseText = result.response.text().trim()
 
-        // Clean up markdown if Gemini returned it despite instructions
+        // Clean up markdown
         let jsonStr = responseText
         if (jsonStr.startsWith('```json')) {
             jsonStr = jsonStr.replace(/^```json\s*/, '').replace(/\s*```$/, '')
