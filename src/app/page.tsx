@@ -16,10 +16,24 @@ export default async function Home() {
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
-      <section className="relative bg-navy text-white pt-24 pb-32 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-navy via-navy to-black z-0"></div>
+      <section className="relative bg-navy text-white pt-24 pb-32 md:pt-32 md:pb-48 overflow-hidden">
+        {/* Video Background */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute inset-0 w-full h-full object-cover z-0 opacity-70"
+        >
+          <source src="https://videos.pexels.com/video-files/4004214/4004214-hd_1920_1080_25fps.mp4" type="video/mp4" />
+        </video>
+
+        {/* Cinematic Overlays */}
+        <div className="absolute inset-0 bg-gradient-to-b from-navy/90 via-navy/40 to-navy/90 z-0"></div>
+        <div className="absolute inset-0 bg-black/30 z-0"></div>
+
         {/* Abstract decorative elements */}
-        <div className="absolute inset-0 z-0 opacity-20">
+        <div className="absolute inset-0 z-0 opacity-30">
           <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] rounded-full bg-gold blur-[120px]"></div>
           <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] rounded-full bg-light-gray blur-[120px]"></div>
         </div>
