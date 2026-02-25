@@ -16,6 +16,18 @@ export async function addProduct(formData: FormData) {
     const imageFiles = formData.getAll('images') as File[]
     const finalImages: string[] = []
 
+    const existingImagesJson = formData.get('existingImages') as string
+    if (existingImagesJson) {
+        try {
+            const existingImages = JSON.parse(existingImagesJson)
+            if (Array.isArray(existingImages)) {
+                finalImages.push(...existingImages)
+            }
+        } catch (e) {
+            console.error('Failed to parse existingImages')
+        }
+    }
+
     const supabase = await createClient()
 
     if (imageOrder && Array.isArray(imageOrder)) {

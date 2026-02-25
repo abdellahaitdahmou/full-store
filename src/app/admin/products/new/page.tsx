@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 import ImageUploadPreview from '../ImageUploadPreview'
 import AIAutoCategorizeButton from '../AIAutoCategorizeButton'
+import AIImport from '@/components/products/AIImport'
 
 export default function NewProductPage() {
     return (
@@ -21,6 +22,8 @@ export default function NewProductPage() {
                     </div>
                 </div>
             </div>
+
+            <AIImport />
 
             <form action={async (formData) => {
                 'use server'
