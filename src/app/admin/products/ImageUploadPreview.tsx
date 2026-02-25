@@ -148,6 +148,24 @@ export default function ImageUploadPreview({ existingImages = [] }: { existingIm
         }
     }, [])
 
+    // Listen for AI imported images
+    useEffect(() => {
+        const handleAIImages = (event: any) => {
+            const imageUrls = event.detail
+            if (Array.isArray(imageUrls)) {
+                const newItems: ImageItem[] = imageUrls.map((url, i) => ({
+                    id: `ai-${Math.random().toString(36).substring(7)}-${i}`,
+                    type: 'existing', // Treat scraped URLs as 'existing' so they are saved as URLs
+                    url
+                }))
+                setItems(prev => [...prev, ...newItems])
+            }
+        }
+
+        window.addEventListener('ai-images-imported', handleAIImages)
+        return () => window.removeEventListener('ai-images-imported', handleAIImages)
+    }, [])
+
     const imageOrderMetadata = items.map(item => {
         if (item.type === 'existing') {
             return { type: 'existing', url: item.url }
