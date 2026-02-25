@@ -1,0 +1,286 @@
+﻿
+> ecom-webapp@0.1.0 build
+> next build
+
+Ôû▓ Next.js 16.1.6 (Turbopack)
+- Environments: .env.local
+
+node.exe : ÔÜá The 
+"middleware" file 
+convention is 
+deprecated. Please 
+use "proxy" instead. 
+Learn more: https://ne
+xtjs.org/docs/messages
+/middleware-to-proxy
+Au caractère Ligne:1 
+: 1
++ & "C:\Program Files\
+nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo 
+...
++ ~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
+~~~~~
+    + CategoryInfo    
+          : NotSpeci  
+  fied: (ÔÜá The "m   
+ iddle...leware-to    
+-proxy:String) []    
+, RemoteException
+    + FullyQualifiedE 
+   rrorId : NativeCo  
+  mmandError
+ 
+  Creating an optimized production build ...
+
+> Build error occurred
+Error: Turbopack 
+build failed with 2 
+errors:
+./src/components/layou
+t/Footer.tsx:5:1
+Export PhoneAlert 
+doesn't exist in 
+target module
+[0m [90m 3 |[39m 
+[36mimport[39m { 
+usePathname } 
+[36mfrom[39m [32m'n
+ext/navigation'[39m
+ [90m 4 |[39m 
+[36mimport[39m 
+[33mLink[39m 
+[36mfrom[39m 
+[32m'next/link'[39m
+[31m[1m>[22m[39m[
+90m 5 |[39m 
+[36mimport[39m { [3
+3mInstagram[39m[33m,
+[39m [33mFacebook[3
+9m[33m,[39m 
+[33mPhoneAlert[39m 
+} [36mfrom[39m [32m
+'lucide-react'[39m
+ [90m   |[39m [31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m
+ [90m 6 |[39m
+ [90m 7 |[39m 
+[36mexport[39m 
+[36mdefault[39m 
+[36mfunction[39m 
+[33mFooter[39m() {
+ [90m 8 |[39m     
+[36mconst[39m 
+pathname [33m=[39m 
+usePathname()[0m
+
+The export PhoneAlert 
+was not found in 
+module [project]/node_
+modules/lucide-react/d
+ist/esm/lucide-react.j
+s [app-client] 
+(ecmascript).
+Did you mean to 
+import Phone?
+All exports of the 
+module are statically 
+known (It doesn't 
+have dynamic 
+exports). So it's 
+known statically that 
+the requested export 
+doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/l
+ayout/Footer.tsx
+    
+./src/app/layout.tsx
+
+
+./src/components/layou
+t/Footer.tsx:5:1
+Export PhoneAlert 
+doesn't exist in 
+target module
+[0m [90m 3 |[39m 
+[36mimport[39m { 
+usePathname } 
+[36mfrom[39m [32m'n
+ext/navigation'[39m
+ [90m 4 |[39m 
+[36mimport[39m 
+[33mLink[39m 
+[36mfrom[39m 
+[32m'next/link'[39m
+[31m[1m>[22m[39m[
+90m 5 |[39m 
+[36mimport[39m { [3
+3mInstagram[39m[33m,
+[39m [33mFacebook[3
+9m[33m,[39m 
+[33mPhoneAlert[39m 
+} [36mfrom[39m [32m
+'lucide-react'[39m
+ [90m   |[39m [31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m[31m[1m^[22m[39m
+[31m[1m^[22m[39m[
+31m[1m^[22m[39m[31
+m[1m^[22m[39m[31m
+[1m^[22m[39m[31m[1
+m^[22m[39m[31m[1m^
+[22m[39m[31m[1m^[
+22m[39m[31m[1m^[22
+m[39m[31m[1m^[22m
+[39m[31m[1m^[22m[3
+9m
+ [90m 6 |[39m
+ [90m 7 |[39m 
+[36mexport[39m 
+[36mdefault[39m 
+[36mfunction[39m 
+[33mFooter[39m() {
+ [90m 8 |[39m     
+[36mconst[39m 
+pathname [33m=[39m 
+usePathname()[0m
+
+The export PhoneAlert 
+was not found in 
+module [project]/node_
+modules/lucide-react/d
+ist/esm/lucide-react.j
+s [app-ssr] 
+(ecmascript).
+Did you mean to 
+import Phone?
+All exports of the 
+module are statically 
+known (It doesn't 
+have dynamic 
+exports). So it's 
+known statically that 
+the requested export 
+doesn't exist.
+
+Import trace:
+  Server Component:
+    ./src/components/l
+ayout/Footer.tsx
+    
+./src/app/layout.tsx
+
+
+    at <unknown> (./sr
+c/components/layout/Fo
+oter.tsx:5:1)
+    at <unknown> (./sr
+c/components/layout/Fo
+oter.tsx:5:1)
