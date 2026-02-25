@@ -30,22 +30,22 @@ export default function DashboardCharts({ data }: DashboardChartsProps) {
     }
 
     return (
-        <div className="bg-white p-6 rounded-2xl border border-gold/10 shadow-sm col-span-1 lg:col-span-3">
+        <div className="bg-white p-4 md:p-6 rounded-2xl border border-gold/10 shadow-sm col-span-1 lg:col-span-3">
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h3 className="text-lg font-serif font-bold text-navy">نظرة عامة على الإيرادات</h3>
-                    <p className="text-sm text-gray-500">الإيرادات والطلبات خلال الـ 7 أيام الماضية</p>
+                    <h3 className="text-base md:text-lg font-serif font-bold text-navy">نظرة عامة على الإيرادات</h3>
+                    <p className="text-xs md:text-sm text-gray-500">الإيرادات والطلبات خلال الـ 7 أيام الماضية</p>
                 </div>
             </div>
 
-            <div className="h-[350px] w-full" dir="ltr">
+            <div className="h-[250px] md:h-[350px] w-full" dir="ltr">
                 <ResponsiveContainer width="100%" height="100%">
                     <AreaChart
                         data={data}
                         margin={{
-                            top: 10,
-                            right: 30,
-                            left: 0,
+                            top: 5,
+                            right: 10,
+                            left: -20,
                             bottom: 0,
                         }}
                     >
@@ -60,15 +60,16 @@ export default function DashboardCharts({ data }: DashboardChartsProps) {
                             dataKey="date"
                             axisLine={false}
                             tickLine={false}
-                            tick={{ fill: '#6B7280', fontSize: 12 }}
+                            tick={{ fill: '#6B7280', fontSize: 11 }}
                             dy={10}
+                            interval="preserveStartEnd"
                         />
                         <YAxis
                             axisLine={false}
                             tickLine={false}
-                            tick={{ fill: '#6B7280', fontSize: 12 }}
-                            tickFormatter={(value) => `${value} MAD`}
-                            dx={-10}
+                            tick={{ fill: '#6B7280', fontSize: 10 }}
+                            tickFormatter={(value) => `${value}`}
+                            dx={0}
                         />
                         <Tooltip
                             contentStyle={{
@@ -76,6 +77,7 @@ export default function DashboardCharts({ data }: DashboardChartsProps) {
                                 border: 'none',
                                 borderRadius: '12px',
                                 color: '#FDFCF8',
+                                fontSize: '10px',
                                 boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
                             }}
                             itemStyle={{ color: '#D4AF37' }}
@@ -84,7 +86,7 @@ export default function DashboardCharts({ data }: DashboardChartsProps) {
                             type="monotone"
                             dataKey="revenue"
                             stroke="#D4AF37"
-                            strokeWidth={3}
+                            strokeWidth={2}
                             fillOpacity={1}
                             fill="url(#colorRevenue)"
                             name="الإيرادات"

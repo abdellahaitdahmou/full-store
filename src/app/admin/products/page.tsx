@@ -4,6 +4,8 @@ import { Plus, Search, Filter, Package } from 'lucide-react'
 import { deleteProduct } from './actions'
 import ProductActions from './ProductActions'
 
+import MobileProductCard from './MobileProductCard'
+
 export default async function ProductsPage() {
     const supabase = await createClient()
     const { data: products } = await supabase
@@ -15,12 +17,12 @@ export default async function ProductsPage() {
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-serif font-bold tracking-tight text-navy">المنتجات</h1>
-                    <p className="text-gray-500 mt-1">إدارة الكتالوج الخاص بك، إضافة وتعديل وحذف المنتجات.</p>
+                    <h1 className="text-2xl md:text-3xl font-serif font-bold tracking-tight text-navy">المنتجات</h1>
+                    <p className="text-gray-500 mt-1 text-sm md:text-base">إدارة الكتالوج الخاص بك، إضافة وتعديل وحذف المنتجات.</p>
                 </div>
                 <Link
                     href="/admin/products/new"
-                    className="flex items-center gap-2 bg-navy text-white px-5 py-2.5 rounded-xl hover:bg-navy/90 hover:shadow-lg transition-all text-sm font-medium"
+                    className="flex items-center justify-center gap-2 bg-navy text-white px-5 py-3 md:py-2.5 rounded-xl hover:bg-navy/90 hover:shadow-lg transition-all text-sm font-medium"
                 >
                     <Plus size={18} />
                     إضافة منتج
@@ -28,8 +30,8 @@ export default async function ProductsPage() {
             </div>
 
             {/* Filters Bar */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
-                <div className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-xl border border-gray-100 flex-1 md:max-w-md focus-within:ring-2 focus-within:ring-gold/30">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-3 md:p-4 rounded-2xl border border-gray-100 shadow-sm">
+                <div className="flex items-center gap-2 bg-gray-50 px-3 py-2.5 md:py-2 rounded-xl border border-gray-100 flex-1 md:max-w-md focus-within:ring-2 focus-within:ring-gold/30">
                     <Search size={18} className="text-gray-400" />
                     <input
                         type="text"
@@ -37,15 +39,20 @@ export default async function ProductsPage() {
                         className="bg-transparent border-none outline-none text-sm w-full text-navy placeholder:text-gray-400"
                     />
                 </div>
-                <div className="flex items-center gap-2">
-                    <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-medium text-navy hover:bg-gray-50 transition-colors">
+                <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-1 md:pb-0">
+                    <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-xl text-sm font-medium text-navy hover:bg-gray-50 transition-colors whitespace-nowrap">
                         <Filter size={16} />
                         تصفية
                     </button>
+                    <div className="h-6 w-px bg-gray-200 mx-1 hidden md:block"></div>
+                    <span className="text-xs text-gray-400 whitespace-nowrap px-2">
+                        {products?.length || 0} منتجات
+                    </span>
                 </div>
             </div>
 
-            <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
+            {/* Desktop Table View */}
+            <div className="hidden md:block bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
                 <table className="w-full text-sm text-right">
                     <thead className="text-xs text-gray-500 uppercase bg-gray-50/50 border-b border-gray-100">
                         <tr>
@@ -103,20 +110,32 @@ export default async function ProductsPage() {
                                 </td>
                             </tr>
                         ))}
-                        {!products?.length && (
-                            <tr>
-                                <td colSpan={5} className="px-6 py-12 text-center">
-                                    <div className="flex flex-col items-center justify-center text-gray-400">
-                                        <Package size={48} className="mb-4 opacity-20" />
-                                        <p className="text-lg font-medium text-navy mb-1">لا توجد منتجات</p>
-                                        <p className="text-sm">انقر على "إضافة منتج" للبدء في بناء الكتالوج.</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        )}
                     </tbody>
                 </table>
             </div>
+
+            {/* Mobile Cards View */}
+            <div className="md:hidden space-y-4">
+                {products?.map((product) => (
+                    <MobileProductCard
+                        key={product.id}
+                        product={product}
+                        onDelete={async () => {
+                            'use server'
+                            await deleteProduct(product.id)
+                        }}
+                    />
+                ))}
+            </div>
+
+            {/* Empty State */}
+            {!products?.length && (
+                <div className="bg-white p-12 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center justify-center text-gray-400">
+                    <Package size={48} className="mb-4 opacity-20" />
+                    <p className="text-lg font-medium text-navy mb-1">لا توجد منتجات</p>
+                    <p className="text-sm">انقر على "إضافة منتج" للبدء في بناء الكتالوج.</p>
+                </div>
+            )}
         </div>
     )
 }

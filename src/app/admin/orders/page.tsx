@@ -3,6 +3,8 @@ import { Search, Filter, Clock, CheckCircle, Package, Image as ImageIcon, XCircl
 import Image from 'next/image'
 import OrderStatusSelect from './OrderStatusSelect'
 
+import MobileOrderCard from './MobileOrderCard'
+
 export default async function OrdersPage({
     searchParams,
 }: {
@@ -22,6 +24,19 @@ export default async function OrdersPage({
 
     const { data: orders } = await query
 
+    const getProductImageUrl = (products: any) => {
+        if (!products || !products.images || !Array.isArray(products.images) || products.images.length === 0) return null
+        const img = products.images[0]
+        if (img.startsWith('http')) return img
+        return supabase.storage.from('products').getPublicUrl(img).data.publicUrl
+    }
+
+    // Pre-calculate image URLs to avoid passing functions to client components
+    const processedOrders = orders?.map(order => ({
+        ...order,
+        productImageUrl: getProductImageUrl(order.products)
+    }))
+
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'Pending':
@@ -37,79 +52,61 @@ export default async function OrdersPage({
         }
     }
 
-    const getProductImageUrl = (products: any) => {
-        if (!products || !products.images || !Array.isArray(products.images) || products.images.length === 0) return null
-        const img = products.images[0]
-        if (img.startsWith('http')) return img
-        return supabase.storage.from('products').getPublicUrl(img).data.publicUrl
-    }
-
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                    <h1 className="text-3xl font-serif font-bold tracking-tight text-navy">الطلبات</h1>
-                    <p className="text-gray-500 mt-1">إدارة طلبات العملاء وتحديث حالات التوصيل.</p>
+                    <h1 className="text-2xl md:text-3xl font-serif font-bold tracking-tight text-navy">الطلبات</h1>
+                    <p className="text-gray-500 mt-1 text-sm md:text-base">إدارة طلبات العملاء وتحديث حالات التوصيل.</p>
                 </div>
             </div>
 
             {/* Advanced Filters Bar */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
-                <div className="flex gap-2 p-1 bg-gray-50 rounded-xl border border-gray-100/50 self-start sm:self-auto overflow-x-auto hide-scrollbar">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-3 md:p-4 rounded-2xl border border-gray-100 shadow-sm">
+                <div className="flex gap-2 p-1 bg-gray-50 rounded-xl border border-gray-100/50 self-start md:self-auto overflow-x-auto hide-scrollbar w-full md:w-auto">
                     <a
                         href="/admin/orders"
-                        className={`px-4 py-2 text-sm rounded-lg font-medium whitespace-nowrap transition-all ${!filterStatus ? 'bg-white text-navy shadow-sm' : 'text-gray-500 hover:text-navy hover:bg-gray-100/50'
+                        className={`px-3 py-1.5 md:px-4 md:py-2 text-[10px] md:text-sm rounded-lg font-bold whitespace-nowrap transition-all ${!filterStatus ? 'bg-white text-navy shadow-sm' : 'text-gray-500 hover:text-navy hover:bg-gray-100/50'
                             }`}
                     >
                         الكل
                     </a>
-                    <a
-                        href="/admin/orders?status=Pending"
-                        className={`px-4 py-2 text-sm rounded-lg font-medium whitespace-nowrap transition-all flex items-center gap-1.5 ${filterStatus === 'Pending' ? 'bg-white text-amber-700 shadow-sm' : 'text-gray-500 hover:text-amber-700 hover:bg-amber-50/50'
-                            }`}
-                    >
-                        <Clock size={16} className={filterStatus === 'Pending' ? 'text-amber-500' : ''} />
-                        قيد الانتظار
-                    </a>
-                    <a
-                        href="/admin/orders?status=Confirmed"
-                        className={`px-4 py-2 text-sm rounded-lg font-medium whitespace-nowrap transition-all flex items-center gap-1.5 ${filterStatus === 'Confirmed' ? 'bg-white text-blue-700 shadow-sm' : 'text-gray-500 hover:text-blue-700 hover:bg-blue-50/50'
-                            }`}
-                    >
-                        <CheckCircle size={16} className={filterStatus === 'Confirmed' ? 'text-blue-500' : ''} />
-                        مؤكد
-                    </a>
-                    <a
-                        href="/admin/orders?status=Delivered"
-                        className={`px-4 py-2 text-sm rounded-lg font-medium whitespace-nowrap transition-all flex items-center gap-1.5 ${filterStatus === 'Delivered' ? 'bg-white text-green-700 shadow-sm' : 'text-gray-500 hover:text-green-700 hover:bg-green-50/50'
-                            }`}
-                    >
-                        <Package size={16} className={filterStatus === 'Delivered' ? 'text-green-500' : ''} />
-                        تم التوصيل
-                    </a>
-                    <a
-                        href="/admin/orders?status=Cancelled"
-                        className={`px-4 py-2 text-sm rounded-lg font-medium whitespace-nowrap transition-all flex items-center gap-1.5 ${filterStatus === 'Cancelled' ? 'bg-white text-red-700 shadow-sm' : 'text-gray-500 hover:text-red-700 hover:bg-red-50/50'
-                            }`}
-                    >
-                        <XCircle size={16} className={filterStatus === 'Cancelled' ? 'text-red-500' : ''} />
-                        ملغى
-                    </a>
+                    {[
+                        { val: 'Pending', label: 'قيد الانتظار', icon: Clock, color: 'amber' },
+                        { val: 'Confirmed', label: 'مؤكد', icon: CheckCircle, color: 'blue' },
+                        { val: 'Delivered', label: 'تم التوصيل', icon: Package, color: 'green' },
+                        { val: 'Cancelled', label: 'ملغى', icon: XCircle, color: 'red' },
+                    ].map((s) => {
+                        const Icon = s.icon
+                        const isActive = filterStatus === s.val
+                        return (
+                            <a
+                                key={s.val}
+                                href={`/admin/orders?status=${s.val}`}
+                                className={`px-3 py-1.5 md:px-4 md:py-2 text-[10px] md:text-sm rounded-lg font-bold whitespace-nowrap transition-all flex items-center gap-1.5 ${isActive
+                                    ? `bg-white text-${s.color}-700 shadow-sm`
+                                    : `text-gray-500 hover:text-${s.color}-700 hover:bg-${s.color}-50/50`
+                                    }`}
+                            >
+                                <Icon size={14} className={isActive ? `text-${s.color}-500` : ''} />
+                                {s.label}
+                            </a>
+                        )
+                    })}
                 </div>
 
-                <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-xl border border-gray-100 w-full sm:w-64 focus-within:ring-2 focus-within:ring-gold/30">
-                        <Search size={16} className="text-gray-400" />
-                        <input
-                            type="text"
-                            placeholder="ابحث برقم الطلب..."
-                            className="bg-transparent border-none outline-none text-sm w-full text-navy placeholder:text-gray-400"
-                        />
-                    </div>
+                <div className="flex items-center gap-2 bg-gray-50 px-3 py-2.5 md:py-2 rounded-xl border border-gray-100 w-full md:w-64 focus-within:ring-2 focus-within:ring-gold/30">
+                    <Search size={16} className="text-gray-400" />
+                    <input
+                        type="text"
+                        placeholder="ابحث برقم الطلب..."
+                        className="bg-transparent border-none outline-none text-sm w-full text-navy placeholder:text-gray-400"
+                    />
                 </div>
             </div>
 
-            <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
+            {/* Desktop Table View */}
+            <div className="hidden md:block bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm">
                 <div className="overflow-x-auto hide-scrollbar">
                     <table className="w-full text-sm text-right">
                         <thead className="text-xs text-gray-500 uppercase bg-gray-50/50 border-b border-gray-100">
@@ -122,7 +119,7 @@ export default async function OrdersPage({
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
-                            {orders?.map((order) => (
+                            {processedOrders?.map((order) => (
                                 <tr key={order.id} className="hover:bg-gray-50/50 transition-colors group">
                                     <td className="px-6 py-4">
                                         <div className="font-serif font-bold text-navy truncate w-32" title={order.id}>
@@ -152,10 +149,10 @@ export default async function OrdersPage({
                                             </div>
                                             <div className="w-12 h-12 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center shrink-0 overflow-hidden relative shadow-sm">
                                                 {/* @ts-ignore */}
-                                                {getProductImageUrl(order.products) ? (
+                                                {order.productImageUrl ? (
                                                     <Image
                                                         // @ts-ignore
-                                                        src={getProductImageUrl(order.products)!}
+                                                        src={order.productImageUrl}
                                                         alt="Product"
                                                         fill
                                                         className="object-cover"
@@ -184,17 +181,28 @@ export default async function OrdersPage({
                                     </td>
                                 </tr>
                             ))}
-                            {!orders?.length && (
-                                <tr>
-                                    <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
-                                        لا توجد طلبات تطابق معايير البحث.
-                                    </td>
-                                </tr>
-                            )}
                         </tbody>
                     </table>
                 </div>
             </div>
+
+            {/* Mobile Cards View */}
+            <div className="md:hidden space-y-4 pb-12">
+                {processedOrders?.map((order) => (
+                    <MobileOrderCard
+                        key={order.id}
+                        order={order}
+                    />
+                ))}
+            </div>
+
+            {/* Empty State */}
+            {!processedOrders?.length && (
+                <div className="bg-white p-12 rounded-2xl border border-gray-100 shadow-sm flex flex-col items-center justify-center text-gray-500">
+                    <Package size={48} className="mb-4 opacity-20" />
+                    <p className="text-lg font-medium text-navy mb-1 text-center">لا توجد طلبات تطابق معايير البحث.</p>
+                </div>
+            )}
         </div>
     )
 }
