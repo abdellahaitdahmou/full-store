@@ -65,82 +65,48 @@ export async function POST(req: Request) {
         })
         const possibleImages = Array.from(imageUrls).slice(0, 30)
 
-        // 3. Prepare Image Parts for Gemini Vision
-        // We fetch the top 10 potential images to find the best product shots
-        const imageCandidates = possibleImages.slice(0, 10)
+        // 3. Prepare Image Parts for Gemini Vision (Top 5 only to save tokens)
+        const imageCandidates = possibleImages.slice(0, 5)
         const imageParts = await Promise.all(
             imageCandidates.map(async (url) => {
                 try {
                     const imgRes = await fetch(url)
                     if (imgRes.ok) {
                         const contentType = imgRes.headers.get('content-type') || 'image/jpeg'
-                        // Only process valid images
                         if (contentType.startsWith('image/')) {
                             const buffer = await imgRes.arrayBuffer()
-                            const base64 = Buffer.from(buffer).toString('base64')
                             return {
                                 inlineData: {
-                                    data: base64,
+                                    data: Buffer.from(buffer).toString('base64'),
                                     mimeType: contentType
                                 }
                             }
                         }
                     }
                 } catch (e) {
-                    console.error(`Failed to fetch image for vision: ${url}`)
+                    console.error(`Fetch error: ${url}`)
                 }
                 return null
             })
         )
         const validImageParts = imageParts.filter(p => p !== null) as any[]
 
-        // 4. Use Gemini 2.0 Flash to extract, translate, and VISION-FILTER details
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' })
+        // 4. Use Gemini Flash (latest) for quota stability
+        const model = genAI.getGenerativeModel({ model: 'gemini-flash-latest' })
         const prompt = `
-        You are an expert e-commerce product data extractor with ADVANCED VISION capabilities.
-        
-        Analyze the provided text content, structured JSON-LD AND the attached images.
-        
-        TASKS:
-        1. "title": Create a concise, attractive product title in Arabic.
-        2. "description": Create a detailed, persuasive product description in Arabic with bullet points for features.
-        3. "price": Extract the price. Convert to Moroccan Dirhams (MAD). (Assume 1 USD = 10 MAD). Return ONLY the number.
-        4. "category": Categorize into one short Arabic category name.
-        5. "images": LOOK AT THE ATCHED IMAGES CAREFULLY. Compare them with the product description from the text.
-           - ONLY select the URLs of images that CLEARLY show the actual PRODUCT being described.
-           - STERNLY IGNORE: Logos, delivery trucks, "Free Shipping" icons, checkmarks, trust badges, payment icons, or advertisements.
-           - Select the images from this list based on their content:
-             ${imageCandidates.join('\n')}
-           - Return the selected URLs in the 'images' array.
+        Analyze text, JSON-LD, and attached images for e-commerce data. Translate to Arabic.
+        JSON only: { "title": "", "description": "", "price": 0, "category": "", "images": [] }
+        Ignore logos/icons. Use from this list ONLY: ${imageCandidates.join(', ')}
 
-        Return EXACTLY a JSON object with NO markdown:
-        {
-            "title": "Title in Arabic",
-            "description": "Description in Arabic",
-            "price": 123.45,
-            "category": "Category",
-            "images": ["url1", "url2"]
-        }
-
-        ---
-        STRUCTURED DATA:
+        DATA:
         ${structuredData}
-        
-        ---
-        TEXT CONTENT:
-        ${textContent.substring(0, 10000)}
+        ${textContent.substring(0, 5000)}
         `
 
         const result = await model.generateContent([prompt, ...validImageParts])
         const responseText = result.response.text().trim()
 
-        // Clean up markdown
-        let jsonStr = responseText
-        if (jsonStr.startsWith('```json')) {
-            jsonStr = jsonStr.replace(/^```json\s*/, '').replace(/\s*```$/, '')
-        } else if (jsonStr.startsWith('```')) {
-            jsonStr = jsonStr.replace(/^```\s*/, '').replace(/\s*```$/, '')
-        }
+        let jsonStr = responseText.replace(/^```json\s*/, '').replace(/\s*```$/, '').replace(/^```\s*/, '').replace(/\s*```$/, '')
 
         const data = JSON.parse(jsonStr)
 
