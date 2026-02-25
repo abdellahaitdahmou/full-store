@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { submitOrder } from './actions'
+import { submitOrder } from '@/app/checkout/actions'
 
 // List of Moroccan cities
 const MOROCCAN_CITIES = [
@@ -20,7 +20,14 @@ export default function OrderForm({ productId }: { productId: string }) {
         setError(null)
 
         const formData = new FormData(e.currentTarget)
-        formData.append('product_id', productId)
+        // Pass single product for the 1-step checkout
+        formData.append('products', JSON.stringify([{
+            id: productId,
+            quantity: 1,
+            // Price and Title are fetched on server if needed, or we can pass placeholders
+            title: 'Product',
+            price: 0
+        }]))
 
         try {
             // Server action
@@ -49,7 +56,7 @@ export default function OrderForm({ productId }: { productId: string }) {
             )}
 
             <div>
-                <label htmlFor="full_name" className="block text-sm font-semibold text-navy mb-1">
+                <label htmlFor="full_name" className="block text-xs font-black text-navy mb-2 uppercase tracking-tight">
                     الاسم الكامل *
                 </label>
                 <input
@@ -57,13 +64,13 @@ export default function OrderForm({ productId }: { productId: string }) {
                     id="full_name"
                     name="full_name"
                     required
-                    placeholder="مثال: ياسين بنعلي"
-                    className="w-full px-4 py-3 border border-gold/30 rounded-xl focus:ring-2 focus:ring-gold focus:border-gold outline-none transition-all shadow-sm bg-white"
+                    placeholder="مثال: أحمد محمد"
+                    className="w-full px-5 py-4 border-2 border-gray-100 rounded-2xl focus:ring-4 focus:ring-[#FF6600]/10 focus:border-[#FF6600] outline-none transition-all shadow-sm bg-white font-bold"
                 />
             </div>
 
             <div>
-                <label htmlFor="phone" className="block text-sm font-semibold text-navy mb-1">
+                <label htmlFor="phone" className="block text-xs font-black text-navy mb-2 uppercase tracking-tight">
                     رقم الهاتف *
                 </label>
                 <input
@@ -72,15 +79,13 @@ export default function OrderForm({ productId }: { productId: string }) {
                     name="phone"
                     required
                     dir="ltr"
-                    // pattern="(06|07)[0-9]{8}"
-                    placeholder="مثال: 0612345678"
-                    className="w-full px-4 py-3 border border-gold/30 rounded-xl focus:ring-2 focus:ring-gold focus:border-gold outline-none transition-all shadow-sm bg-white text-right"
+                    placeholder="06XXXXXXXX"
+                    className="w-full px-5 py-4 border-2 border-gray-100 rounded-2xl focus:ring-4 focus:ring-[#FF6600]/10 focus:border-[#FF6600] outline-none transition-all shadow-sm bg-white text-right font-bold"
                 />
-                <p className="text-xs text-gray-500 mt-1">سنتصل بك على هذا الرقم.</p>
             </div>
 
             <div>
-                <label htmlFor="city" className="block text-sm font-semibold text-navy mb-1">
+                <label htmlFor="city" className="block text-xs font-black text-navy mb-2 uppercase tracking-tight">
                     المدينة *
                 </label>
                 <div className="relative">
@@ -88,15 +93,15 @@ export default function OrderForm({ productId }: { productId: string }) {
                         id="city"
                         name="city"
                         required
-                        className="w-full px-4 py-3 border border-gold/30 rounded-xl focus:ring-2 focus:ring-gold focus:border-gold outline-none transition-all shadow-sm bg-white appearance-none"
+                        className="w-full px-5 py-4 border-2 border-gray-100 rounded-2xl focus:ring-4 focus:ring-[#FF6600]/10 focus:border-[#FF6600] outline-none transition-all shadow-sm bg-white appearance-none font-bold"
                     >
                         <option value="">اختر مدينتك</option>
                         {MOROCCAN_CITIES.map(c => (
                             <option key={c} value={c}>{c}</option>
                         ))}
                     </select>
-                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center px-4 text-gray-500">
-                        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                    <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center px-5 text-gray-400">
+                        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
                     </div>
                 </div>
             </div>
@@ -104,12 +109,16 @@ export default function OrderForm({ productId }: { productId: string }) {
             <button
                 type="submit"
                 disabled={loading}
-                className="w-full mt-4 bg-gold text-white py-4 px-6 rounded-xl font-bold font-serif text-lg hover:opacity-90 transition-all shadow-lg hover:shadow-gold/30 hover:-translate-y-1 disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-lg flex items-center justify-center gap-2"
+                className="w-full mt-6 bg-[#FF6600] text-white py-5 px-6 rounded-2xl font-black text-xl hover:opacity-90 transition-all shadow-xl shadow-orange-200 hover:-translate-y-1 disabled:opacity-70 disabled:hover:translate-y-0 flex items-center justify-center gap-3 uppercase tracking-wider"
             >
                 {loading ? (
-                    <span className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin"></span>
+                    <span className="w-7 h-7 border-4 border-white border-t-transparent rounded-full animate-spin"></span>
                 ) : (
-                    "تأكيد الطلب (الدفع عند الاستلام)"
+                    <>
+                        تأكيد الطلب الآن
+                        <span className="text-white/50">|</span>
+                        الدفع عند الاستلام
+                    </>
                 )}
             </button>
 

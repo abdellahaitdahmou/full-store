@@ -4,8 +4,10 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { ShoppingBag, Search, Menu, X } from 'lucide-react'
 import { usePathname, useRouter } from 'next/navigation'
+import { useCart } from '@/context/CartContext'
 
 export default function Header() {
+    const { cartCount } = useCart()
     const [isScrolled, setIsScrolled] = useState(false)
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [searchQuery, setSearchQuery] = useState('')
@@ -25,6 +27,16 @@ export default function Header() {
         return () => window.removeEventListener('scroll', handleScroll)
     }, [])
 
+    useEffect(() => {
+        if (isMobileMenuOpen) {
+            document.body.style.overflow = 'hidden';
+            document.body.classList.add('menu-open');
+        } else {
+            document.body.style.overflow = '';
+            document.body.classList.remove('menu-open');
+        }
+    }, [isMobileMenuOpen])
+
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault()
         if (searchQuery.trim()) {
@@ -43,44 +55,46 @@ export default function Header() {
                 <div className="container mx-auto px-4 md:px-8 max-w-7xl">
                     <div className="grid grid-cols-2 md:grid-cols-3 items-center gap-4">
 
-                        {/* Logo - Left */}
+                        {/* Logo - Right (in RTL) */}
                         <div className="flex items-center justify-start">
                             <Link href="/" className="flex items-center gap-2 group z-50">
-                                <div className="w-9 h-9 bg-[#FF6600] text-white rounded-lg flex items-center justify-center font-black text-xl shadow-lg ring-4 ring-[#FF6600]/10 shrink-0">
-                                    Q
+                                <div className="w-9 h-9 bg-[#FF6600] text-white rounded-lg flex items-center justify-center font-black shadow-lg ring-4 ring-[#FF6600]/10 shrink-0">
+                                    <ShoppingBag size={20} strokeWidth={3} />
                                 </div>
-                                <span className="font-sans font-black text-xl md:text-2xl tracking-tighter text-navy flex items-center">
-                                    QUICK <span className="text-[#FF6600] ml-1">DROP</span>
+                                <span className="font-sans font-black text-xl md:text-2xl tracking-tighter text-navy flex items-center gap-1">
+                                    كويك <span className="text-[#FF6600]">دروب</span>
                                 </span>
                             </Link>
                         </div>
 
                         {/* Desktop Navigation - Center */}
-                        <nav className="hidden md:flex items-center justify-center gap-10">
+                        <nav className="hidden md:flex items-center justify-center gap-6 lg:gap-10">
                             {[
-                                { name: 'Home', path: '/' },
-                                { name: 'Shop', path: '/products' },
-                                { name: 'Categories', path: '/products' },
-                                { name: 'Track Order', path: '/checkout' }
+                                { name: 'الرئيسية', path: '/' },
+                                { name: 'المتجر', path: '/products' }
                             ].map((link) => (
                                 <Link
                                     key={link.name}
                                     href={link.path}
-                                    className={`font-bold text-sm uppercase tracking-widest transition-colors ${pathname === link.path ? 'text-[#FF6600]' : 'text-navy hover:text-[#FF6600]'}`}
+                                    className={`font-bold text-xs lg:text-sm uppercase tracking-widest transition-colors whitespace-nowrap ${pathname === link.path ? 'text-[#FF6600]' : 'text-navy hover:text-[#FF6600]'}`}
                                 >
                                     {link.name}
                                 </Link>
                             ))}
                         </nav>
 
-                        {/* Actions - Right */}
-                        <div className="flex items-center justify-end gap-3 md:gap-6 z-50">
+                        {/* Actions - Left (in RTL) */}
+                        <div className="flex items-center justify-end gap-3 md:gap-5 z-50">
                             <button className="p-2 text-navy hover:text-[#FF6600] transition-colors hidden sm:block">
                                 <Search size={22} strokeWidth={2.5} />
                             </button>
-                            <Link href="/checkout" className="p-2 text-navy hover:text-[#FF6600] transition-colors relative">
+                            <Link href="/cart" className="p-2 text-navy hover:text-[#FF6600] transition-colors relative">
                                 <ShoppingBag size={22} strokeWidth={2.5} />
-                                <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#FF6600] text-white text-[9px] flex items-center justify-center rounded-full font-bold">0</span>
+                                {cartCount > 0 && (
+                                    <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#FF6600] text-white text-[9px] flex items-center justify-center rounded-full font-bold">
+                                        {cartCount}
+                                    </span>
+                                )}
                             </Link>
 
                             {/* Mobile Menu Button */}
@@ -97,7 +111,7 @@ export default function Header() {
 
             {/* Mobile Menu Overlay */}
             <div
-                className={`fixed inset-0 bg-white z-40 transition-transform duration-500 ease-in-out md:hidden flex flex-col ${isMobileMenuOpen ? 'translate-y-0' : '-translate-y-full'
+                className={`fixed inset-0 bg-white z-[100] transition-transform duration-500 ease-in-out md:hidden flex flex-col ${isMobileMenuOpen ? 'translate-y-0' : '-translate-y-full'
                     }`}
             >
                 <div className="pt-24 px-6 flex flex-col gap-8 flex-1">

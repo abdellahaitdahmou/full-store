@@ -91,4 +91,8 @@
   .text-balance {
     text-wrap: balance;
   }
+
+  .menu-open .sticky-filter-bar {
+    @apply opacity-0 pointer-events-none invisible;
+  }
 }

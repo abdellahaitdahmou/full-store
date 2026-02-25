@@ -12,6 +12,8 @@ export const metadata: Metadata = {
   description: 'Premium Moroccan eCommerce Store with Cash on Delivery.',
 }
 
+import { CartProvider } from '@/context/CartContext'
+
 export default function RootLayout({
   children,
 }: {
@@ -20,12 +22,14 @@ export default function RootLayout({
   return (
     <html lang="ar" dir="rtl">
       <body className={`${inter.variable} ${playfair.variable} font-sans min-h-screen flex flex-col bg-background text-foreground`}>
-        {/* We selectively render Header/Footer based on route.
-            For simplicity, since /admin has its own layout, the root layout wraps all.
-            We will make Header/Footer conditional clientside or just ignore /admin routes in those components. */}
-        <Header />
-        <main className="flex-1 flex flex-col pt-16">{children}</main>
-        <Footer />
+        <CartProvider>
+          {/* We selectively render Header/Footer based on route.
+              For simplicity, since /admin has its own layout, the root layout wraps all.
+              We will make Header/Footer conditional clientside or just ignore /admin routes in those components. */}
+          <Header />
+          <main className="flex-1 flex flex-col pt-16">{children}</main>
+          <Footer />
+        </CartProvider>
       </body>
     </html>
   )
