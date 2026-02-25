@@ -58,7 +58,7 @@ export async function POST(req: Request) {
         const possibleImages = Array.from(imageUrls).slice(0, 20).join('\n')
 
         // 3. Use Gemini to extract and translate details
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' })
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
         const prompt = `
         You are an expert e-commerce product data extractor. 
         Analyze the following text content, structured JSON-LD (if any), and list of possible image URLs scraped from an e-commerce product page (like AliExpress, Alibaba, or Temu).
