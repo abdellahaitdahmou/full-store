@@ -23,8 +23,8 @@ export default function Sidebar({ signOutAction }: { signOutAction: () => Promis
             {/* Logo Area */}
             <div className="p-8 flex items-center justify-center border-b border-white/5">
                 <h2 className="text-3xl font-serif font-black tracking-wider flex items-center gap-2">
-                    <span className="text-white">لحظة</span>
-                    <span className="text-gold">جولد</span>
+                    <span className="text-white">كويك</span>
+                    <span className="text-gold">دروب</span>
                 </h2>
             </div>
 

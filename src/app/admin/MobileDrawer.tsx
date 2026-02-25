@@ -34,7 +34,7 @@ export default function MobileDrawer({ isOpen, onClose, signOutAction }: MobileD
                     <div className="flex items-center gap-2">
                         <ShieldCheck size={20} className="text-gold" />
                         <span className="font-serif font-black tracking-wider text-xl">
-                            لحظة <span className="text-gold">جولد</span>
+                            كويك <span className="text-gold">دروب</span>
                         </span>
                     </div>
                     <button
