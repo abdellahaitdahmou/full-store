@@ -17,16 +17,12 @@ export default async function Home() {
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
       <section className="relative bg-navy text-white pt-24 pb-32 md:pt-32 md:pb-48 overflow-hidden">
-        {/* Video Background */}
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover z-0 opacity-70"
-        >
-          <source src="https://videos.pexels.com/video-files/7308098/7308098-hd_1920_1080_24fps.mp4" type="video/mp4" />
-        </video>
+        {/* Image Background */}
+        <img
+          src="https://images.pexels.com/photos/4464887/pexels-photo-4464887.jpeg?auto=compress&cs=tinysrgb&w=1920"
+          alt="Luxury Packaging Background"
+          className="absolute inset-0 w-full h-full object-cover z-0 opacity-60"
+        />
 
         {/* Cinematic Overlays */}
         <div className="absolute inset-0 bg-gradient-to-b from-navy/90 via-navy/40 to-navy/90 z-0"></div>
