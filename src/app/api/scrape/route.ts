@@ -49,13 +49,21 @@ export async function POST(req: Request) {
 
         // Extract all images to help Gemini find the best ones
         const imageUrls = new Set<string>()
+        const blacklist = ['icon', 'logo', 'avatar', 'button', 'banner', 'ad', 'shipping', 'delivery', 'trust', 'badge', 'payment', 'cart', 'app-download']
+
         $('img').each((_, el) => {
             const src = $(el).attr('src') || $(el).attr('data-src') || $(el).attr('srcset')
-            if (src && src.startsWith('http') && !src.includes('icon') && !src.includes('logo')) {
-                imageUrls.add(src)
+            if (src && src.startsWith('http')) {
+                const lowerSrc = src.toLowerCase()
+                const isBlacklisted = blacklist.some(word => lowerSrc.includes(word))
+
+                // Usually product images are larger or have specific extensions
+                if (!isBlacklisted && !lowerSrc.endsWith('.svg') && !lowerSrc.endsWith('.gif')) {
+                    imageUrls.add(src)
+                }
             }
         })
-        const possibleImages = Array.from(imageUrls).slice(0, 20).join('\n')
+        const possibleImages = Array.from(imageUrls).slice(0, 30).join('\n')
 
         // 3. Use Gemini to extract and translate details
         const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' })
@@ -67,10 +75,14 @@ export async function POST(req: Request) {
         1. "title": A concise, attractive product title in Arabic.
         2. "description": A detailed, persuasive product description in Arabic with bullet points for features.
         3. "price": Extract the numeric price. Convert it appropriately to Moroccan Dirhams (MAD) if it's in USD or EUR (Assume 1 USD = 10 MAD, 1 EUR = 11 MAD approx). Just return the number without currency symbols.
-        4. "category": Categorize the product into one short Arabic category name (e.g., إلكترونيات, ملابس رجالية, ملابس نسائية, عطور, ديكور المنزل).
-        5. "images": Select the top 1 to 4 highest quality, main product image URLs from the 'Possible Images' list. Ensure they are absolute, valid HTTP/HTTPS URLs.
+        4. "category": Categorize the product into one short Arabic category name.
+        5. "images": Select the top 1 to 6 highest quality, MAIN PRODUCT GALLERY/SHOWCASE images. 
+           CRITICAL RULES FOR IMAGES:
+           - IGNORE logos, shipping icons, truck icons, checkmarks, trust badges, payment method icons, or empty placeholders.
+           - ONLY select images that show the ACTUAL product being sold.
+           - Prefer larger images that look like professional photography.
 
-        Return EXACTLY a JSON object with NO markdown formatting, NO backticks.
+        Return EXACTLY a JSON object with NO markdown formatting.
         {
             "title": "Title in Arabic",
             "description": "Description in Arabic",
