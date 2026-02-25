@@ -47,22 +47,47 @@ export async function POST(req: Request) {
 
         const textContent = $('body').text().replace(/\s+/g, ' ').substring(0, 15000) // limit text size
 
-        // Extract all images to help Gemini find the best ones
+        // Extract images with better heuristics
         const imageUrls = new Set<string>()
-        const blacklist = ['icon', 'logo', 'avatar', 'button', 'banner', 'ad', 'shipping', 'delivery', 'trust', 'badge', 'payment', 'cart', 'app-download']
+        const blacklist = ['icon', 'logo', 'avatar', 'button', 'banner', 'ad', 'shipping', 'delivery', 'trust', 'badge', 'payment', 'cart', 'app-download', 'flag', 'sprite', 'loading']
 
+        // 1. Look for meta images (high quality)
+        $('meta[property="og:image"], meta[name="twitter:image"], link[rel="image_src"]').each((_, el) => {
+            const src = $(el).attr('content') || $(el).attr('href')
+            if (src) imageUrls.add(src.startsWith('//') ? `https:${src}` : src)
+        })
+
+        // 2. Look for regular images, prioritizing gallery-like patterns
         $('img').each((_, el) => {
-            const src = $(el).attr('src') || $(el).attr('data-src') || $(el).attr('srcset')
-            if (src && src.startsWith('http')) {
+            let src = $(el).attr('src') || $(el).attr('data-src') || $(el).attr('srcset') || $(el).attr('data-lazy-src')
+            if (!src) return
+
+            // Handle srcset (take the first/best one)
+            if (src.includes(' ')) src = src.split(' ')[0]
+
+            // Clean URL
+            if (src.startsWith('//')) src = `https:${src}`
+
+            if (src.startsWith('http')) {
                 const lowerSrc = src.toLowerCase()
+
+                // Blacklist common UI elements
                 const isBlacklisted = blacklist.some(word => lowerSrc.includes(word))
 
-                // Usually product images are larger or have specific extensions
+                // Heuristic: Alibaba/AliExpress product images often have certain patterns
+                const isLikelyProduct = lowerSrc.includes('alicdn.com') || lowerSrc.includes('slatic.net') || lowerSrc.includes('.jpg_') || lowerSrc.includes('.png_')
+
                 if (!isBlacklisted && !lowerSrc.endsWith('.svg') && !lowerSrc.endsWith('.gif')) {
-                    imageUrls.add(src)
+                    if (isLikelyProduct) {
+                        imageUrls.add(src) // Prioritize
+                    } else {
+                        // Keep other candidates but they'll be processed later
+                        imageUrls.add(src)
+                    }
                 }
             }
         })
+
         const possibleImages = Array.from(imageUrls).slice(0, 30)
 
         // 3. Prepare Image Parts for Gemini Vision (Top 5 only to save tokens)
@@ -94,11 +119,24 @@ export async function POST(req: Request) {
         // 4. Use Gemini Flash (latest) for quota stability
         const model = genAI.getGenerativeModel({ model: 'gemini-flash-latest' })
         const prompt = `
-        Analyze text, JSON-LD, and attached images for e-commerce data. Translate to Arabic.
-        JSON only: { "title": "", "description": "", "price": 0, "category": "", "images": [] }
-        Ignore logos/icons. Use from this list ONLY: ${imageCandidates.join(', ')}
+        Analyze the provided text, JSON-LD, and attached images for this e-commerce product.
+        
+        CRITICAL GOAL: Extract data and translate to professional Moroccan Arabic.
+        
+        IMAGE SELECTION RULES (STRICT):
+        - You are provided with 5 candidate images visually and their URLs in the list below.
+        - Look at the ATTACHED IMAGES. ONLY select the ones that are CLEAR photographs of the actual physical product described in the title.
+        - STERNLY REJECT: Logos, delivery trucks, flags, "Free Shipping" icons, checkmarks, trust badges, payment icons, or screenshots of text.
+        - If an image only shows a brand name or a small UI fragment, REJECT IT.
+        - From the candidate list below, extract ONLY the URLs that correspond to the valid product showcase photos you see in the attachments.
+        
+        Candidate URLs:
+        ${imageCandidates.join(', ')}
 
-        DATA:
+        JSON FORMAT (REQUIRED):
+        { "title": "Arabic Title", "description": "Arabic Description", "price": 0, "category": "Arabic Category", "images": ["valid_urls_from_list"] }
+
+        PAGE CONTENT (DATA):
         ${structuredData}
         ${textContent.substring(0, 5000)}
         `
