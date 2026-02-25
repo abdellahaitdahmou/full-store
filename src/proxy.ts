@@ -1,8 +1,10 @@
-import { updateSession } from '@/lib/supabase/session'
-import { type NextRequest } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
 
 export async function proxy(request: NextRequest) {
-    return await updateSession(request)
+    // Vercel Edge Server crashes on Supabase SSR initializing.
+    // Bypassing middleware completely; authentication redirects 
+    // will be handled by Layout/Page components in the Node runtime.
+    return NextResponse.next()
 }
 
 export const config = {
